@@ -44,7 +44,9 @@ def main(db, repo):
             if r.get('kind', 'lesson') == 'lesson' and empty(r): continue
             S.append(r)
         S.sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
-        body = {"teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S}
+        cur = [x.get('no') for x in sessions if x.get('sid') == sid and isinstance(x.get('no'), (int, float)) and (x.get('date') or '9') <= today
+               and x.get('kind') != 'event' and not (x.get('kind', 'lesson') == 'lesson' and empty(x))]
+        body = {"curNo": max(cur) if cur else None, "teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S}
         key = key_of(pub['key']); out = os.path.join(repo, pub['path'], 'data.json')
         try:
             E = json.load(open(out))
