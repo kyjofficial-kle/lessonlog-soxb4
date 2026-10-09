@@ -58,7 +58,7 @@ def main(db, repo):
         D = {"generatedAt": today, **body}
         iv = os.urandom(12); ct = AESGCM(key).encrypt(iv, json.dumps(D, ensure_ascii=False).encode(), None)
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        json.dump({"v": 1, "id": pub['path'], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
+        json.dump({"v": 1, "sv": 2, "id": pub["path"], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
         changed.append(pub['path'])
     print("updated:", ", ".join(changed) if changed else "none")
 

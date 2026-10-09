@@ -289,7 +289,11 @@ renderScore(); renderHw(); renderLog();
 <script>
 (async () => {
 let E = JSON.parse(document.getElementById("enc").textContent);
-try { const r = await fetch("data.json?t=" + Date.now(), { cache:"no-store" }); if(r.ok){ const j = await r.json(); if(j && j.iv && j.ct) E = j; } } catch(e){}
+const SHELL_V = 2;
+try { const r = await fetch("data.json?t=" + Date.now(), { cache:"no-store" }); if(r.ok){ const j = await r.json();
+  if(j && j.sv > SHELL_V){ let done = null; try { done = sessionStorage.getItem("lessonlog.sv"); } catch(e){}
+    if(done !== String(j.sv)){ try { sessionStorage.setItem("lessonlog.sv", String(j.sv)); } catch(e){} location.replace(location.pathname + "?v=" + j.sv + location.hash); return; } }
+  if(j && j.iv && j.ct) E = j; } } catch(e){}
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const b64url = s => b64(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length + 3) % 4));
 const KEY = "lessonlog." + location.pathname;
