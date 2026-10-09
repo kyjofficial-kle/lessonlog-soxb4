@@ -9,12 +9,18 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 KEEP = ['date','no','kind','hwRate','hwMemo','pretest','tests','progress','hw','note']
 EXAM = ['title','official','raw','std','pct','cut','grade','read','lit','sel','wrong']
 
+FEE = re.compile(r'수업료|원\s*[x×*]|입금|계좌|송금|\d{2,3},\d{3}원')
+
 def clean(note):
     out = []
     for line in str(note or '').split('\n'):
         if re.search(r'상품권|공약', line): break
+        if FEE.search(line): continue
         out.append(line)
     return '\n'.join(out).strip()
+
+def empty(r):
+    return not any([r.get('progress'), r.get('note'), r.get('hw'), r.get('tests'), r.get('pretest'), r.get('exam'), r.get('hwRate') is not None])
 
 def load(path):
     x = json.load(open(path))
@@ -35,6 +41,7 @@ def main(db, repo):
             if x.get('sid') != sid or x.get('kind') in ('absent', 'event'): continue
             r = {k: x.get(k) for k in KEEP}; r['note'] = clean(r['note'])
             e = x.get('exam'); r['exam'] = {k: e.get(k) for k in EXAM} if e else None
+            if r.get('kind', 'lesson') == 'lesson' and empty(r): continue
             S.append(r)
         S.sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
         body = {"teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S}
