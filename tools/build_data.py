@@ -46,7 +46,7 @@ def main(db, repo):
         S.sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
         cur = [x.get('no') for x in sessions if x.get('sid') == sid and isinstance(x.get('no'), (int, float)) and (x.get('date') or '9') <= today
                and x.get('kind') != 'event' and not (x.get('kind', 'lesson') == 'lesson' and empty(x))]
-        body = {"curNo": max(cur) if cur else None, "teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S, "mocks": [{"label": m.get("label"), "date": m.get("date"), "note": m.get("note"), "items": m.get("items") or {}} for m in (st.get("mocks") or [])], "advice": ({"text": st["advice"]["text"], "date": st["advice"].get("date")} if isinstance(st.get("advice"), dict) and st["advice"].get("text") and st["advice"].get("show") is not False else None)}
+        body = {"curNo": max(cur) if cur else None, "teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S, "univ": ({k: st["univ"].get(k) for k in ("source","date","basis","input","fit","reach","fitTotal","reachTotal")} if isinstance(st.get("univ"), dict) else None), "mocks": [{"label": m.get("label"), "date": m.get("date"), "note": m.get("note"), "items": m.get("items") or {}} for m in (st.get("mocks") or [])], "advice": ({"text": st["advice"]["text"], "date": st["advice"].get("date")} if isinstance(st.get("advice"), dict) and st["advice"].get("text") and st["advice"].get("show") is not False else None)}
         key = key_of(pub['key']); out = os.path.join(repo, pub['path'], 'data.json')
         try:
             E = json.load(open(out))
@@ -58,7 +58,7 @@ def main(db, repo):
         D = {"generatedAt": today, **body}
         iv = os.urandom(12); ct = AESGCM(key).encrypt(iv, json.dumps(D, ensure_ascii=False).encode(), None)
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        json.dump({"v": 1, "sv": 5, "id": pub["path"], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
+        json.dump({"v": 1, "sv": 6, "id": pub["path"], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
         changed.append(pub['path'])
     print("updated:", ", ".join(changed) if changed else "none")
 
