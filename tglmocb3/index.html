@@ -192,37 +192,6 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-top:6px;lin
 .dl{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}.dl.up{color:#17803d}.dl.dn{color:#c0392b}.dl.eq{color:var(--muted)}
 @media (prefers-color-scheme:dark){.dl.up{color:#7fd69c}.dl.dn{color:#f19a8f}}
 
-/* v3: 채점 노트 톤 */
-:root{--bg:#eef0f3;--ink:#161c2b;--ink2:#4a5366;--muted:#7c8496;--line:#e6e8ee;--line2:#d6dae3;--accent:#d63c34;--accent-ink:#b8302a;--accent-soft:#fcebea;--navy:#1f2b4d;--shadow:0 1px 0 rgba(22,28,43,.04)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:#ff6b62;--accent-ink:#ff8c84;--accent-soft:#3a1a19;--navy:#8fa6e6}}
-.card{border:1px solid var(--line);box-shadow:var(--shadow)}
-.card>header h2,.kswrap header h2{font-size:16px;font-weight:800;letter-spacing:-.025em}
-.top h1{letter-spacing:-.045em}
-.seg button[aria-pressed="true"]{box-shadow:0 0 0 1px var(--line2)}
-#ks-range{accent-color:var(--navy)}
-#week .log{margin-top:0!important;padding:0 6px 6px}#week .sess{border-color:transparent;box-shadow:none;background:var(--sunk)}
-
-/* v4: 토스풍 */
-:root{--bg:#f2f4f6;--surface:#fff;--sunk:#f2f4f6;--ink:#191f28;--ink2:#4e5968;--muted:#8b95a1;--faint:#b0b8c1;--line:#eef0f3;--line2:#e5e8eb;--accent:#f04452;--accent-ink:#e42939;--accent-soft:#ffeeee;--navy:#3182f6;--good:#03b26c;--good-soft:#e5f8ef;--r:20px;--shadow:none}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101113;--surface:#1b1d22;--sunk:#24272e;--ink:#f2f4f6;--ink2:#c3cad3;--muted:#8b95a1;--line:#262a31;--line2:#2f343c;--navy:#4c94ff;--accent:#ff5f6d;--accent-ink:#ff7d88;--accent-soft:#3a1c20}}
-body{letter-spacing:-.015em}
-.card,.stat{border:0!important;box-shadow:none!important;border-radius:var(--r)}
-.card>header{padding:22px 22px 0}
-.card>.body{padding:14px 22px 22px}
-.card>header h2,.kswrap header h2{font-size:17px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
-.emo{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--sunk);font-size:15px;line-height:1;flex:none}
-.top .dot{background:var(--navy)}
-.top h1{font-size:28px;font-weight:800}
-.seg{background:var(--sunk);border:0;border-radius:12px;padding:3px}
-.seg button{border-radius:9px}
-.seg button[aria-pressed="true"]{box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.sess{border:0;background:var(--sunk);border-radius:16px}
-#week .sess{background:var(--sunk)}
-.ugrp{border-radius:14px}
-.pill{border-radius:8px}
-.tbl{border-top:0}
-#ks-range{accent-color:var(--navy)}
-.utog{background:var(--sunk)}
 </style>
 
 <div class="wrap" id="lock">
@@ -515,9 +484,6 @@ function renderWeek(){
 }
 renderWeek(); renderAdvice(); renderAll(); renderUniv(); renderKsim(); renderSims();
 renderScore(); renderHw(); renderLog();
-const EMO = [["이번 주 수업","📘"],["가장 최근 수업","📘"],["AI 기반 학습 조언","✨"],["전 과목 성적","📊"],["정시 지원 가능권","🏫"],["국어 점수를 올린다면","🎚️"],["만약 이만큼","🔮"],["성적 변화","📈"],["숙제 이행률","✅"],["수업 기록","📝"]];
-const emoHeads = () => { for(const h of document.querySelectorAll("#app h2")){ if(h.querySelector(".emo")) continue; const t = h.textContent.trim(); const e = (EMO.find(([k]) => t.startsWith(k)) || [])[1]; if(e) h.insertAdjacentHTML("afterbegin", `<span class="emo" aria-hidden="true">${e}</span>`); } };
-emoHeads(); new MutationObserver(emoHeads).observe(document.getElementById("app"), { childList:true, subtree:true });
 };
 </script>
 <script>
