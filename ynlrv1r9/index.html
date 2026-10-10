@@ -174,6 +174,18 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-top:6px;lin
 .kswrap>summary header{position:relative;display:block;padding:16px 50px 16px 18px}.kswrap header h2{font-size:17px;margin:0;font-weight:800;letter-spacing:-.03em}.kswrap header .sub{font-size:13px;color:var(--muted)}.kswrap[open]>summary header{padding-bottom:0}
 .kswrap>summary .utog{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
 .kswrap[open] .utog::before{transform:translateY(2px) rotate(-135deg)}
+.kswrap>.body{padding:4px 18px 18px}
+.ksv{font-size:15px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.ksv span{display:inline;font-size:12.5px;color:var(--muted);margin:0}
+#ks-range{width:100%;margin:8px 0 0;height:18px;accent-color:#d6453d}
+.ksticks{font-size:11px;margin-top:-2px}
+.ksum{font-size:12.5px;margin:6px 0 4px;color:var(--muted)}
+.ksgrid{display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:640px){.ksgrid{grid-template-columns:1fr 1fr}}
+.ksgrid .ugrp{margin-top:0;padding:10px 12px}
+.ksgrid .uh{margin-bottom:4px}.ksgrid .uh b{font-size:13.5px}.ksgrid .uh span{font-size:11.5px}
+.ksgrid .urank{gap:3px;padding-left:18px}.ksgrid .urank li{font-size:13px;line-height:1.45}
+.ksgrid .um{margin-left:5px;gap:4px}.ksgrid .um i{font-size:10.5px}.ksgrid .zn{font-size:10px;padding:0 4px}.ksgrid .newb{font-size:9.5px;padding:0 4px}
+.kswrap .unote{font-size:11.5px;margin-top:8px}
 </style>
 
 <div class="wrap" id="lock">
@@ -438,16 +450,16 @@ function renderKsim(){
   const li = list => list.map(x => `<li><b>${esc(x.u)}</b> ${esc(x.m)}<span class="um">${x.up ? '<span class="newb">NEW</span>' : ""}${x.z ? `<span class="zn">${ZONE[x.z] || ""}</span>` : ""}${x.g ? `<i>${esc(x.g === "이월" ? "수시이월" : x.g + "군")}</i>` : ""}</span></li>`).join("");
   const draw = d => { const v = L.find(x => x.d === d) || L[0], b = L[0];
     const nNew = v.fit.filter(x => x.up).length + v.reach.filter(x => x.up).length;
-    document.getElementById("ks-val").innerHTML = d ? `국어 원점수 <b>+${d}점</b> <span>표준점수 ${b.std} → <b>${v.std}</b></span>` : `<b>지금 성적</b> <span>국어 표준점수 ${b.std}</span>`;
-    document.getElementById("ks-sum").textContent = d ? `합격 가능성 50% 이상 학과가 ${v.fitN - b.fitN >= 0 ? "+" : ""}${(v.fitN - b.fitN).toLocaleString()}개 늘어납니다${nNew ? ` · 아래 목록 중 새로 올라온 학과 ${nNew}개` : ""}` : "막대를 오른쪽으로 옮겨 보세요.";
-    document.getElementById("ks-fit").innerHTML = li(v.fit); document.getElementById("ks-reach").innerHTML = li(v.reach); };
+    document.getElementById("ks-val").innerHTML = d ? `국어 <b>+${d}점</b><span>표준점수 ${b.std} → <b>${v.std}</b></span>` : `<b>지금 성적</b><span>국어 표준점수 ${b.std}</span>`;
+    document.getElementById("ks-sum").textContent = d ? `합격 가능성 50% 이상 학과가 ${v.fitN - b.fitN >= 0 ? "+" : ""}${(v.fitN - b.fitN).toLocaleString()}개 늘어납니다` : "막대를 오른쪽으로 옮겨 보세요.";
+    document.getElementById("ks-fit").innerHTML = li(v.fit.slice(0,6)); document.getElementById("ks-reach").innerHTML = li(v.reach.slice(0,6)); };
   el.innerHTML = `<details class="kswrap"><summary><header><div><h2>국어 점수를 올린다면</h2><div class="sub">9월 모의평가 성적에서 국어만 오른다고 가정한 예측 · 눌러서 펼쳐 보세요</div></div><span class="utog" aria-hidden="true"></span></header></summary>
   <div class="body"><div class="ksv" id="ks-val"></div>
     <input type="range" id="ks-range" min="0" max="${max}" step="1" value="0" aria-label="국어 원점수 올리기">
     <div class="ksticks"><span>지금</span><span>+${Math.round(max/3)}점</span><span>+${Math.round(max*2/3)}점</span><span>+${max}점</span></div>
     <p class="ksum" id="ks-sum"></p>
-    <div class="ugrp fit flat"><div class="uh"><b>적정권</b><span>합격 가능성 50% 이상 · 합격선 높은 학과 10개</span></div><ol class="urank" id="ks-fit"></ol></div>
-    <div class="ugrp reach flat"><div class="uh"><b>소신권</b><span>합격 가능성 20~49% · 합격선 높은 학과 10개</span></div><ol class="urank" id="ks-reach"></ol></div>
+    <div class="ksgrid"><div class="ugrp fit flat"><div class="uh"><b>적정권</b><span>합격 가능성 50% 이상</span></div><ol class="urank" id="ks-fit"></ol></div>
+    <div class="ugrp reach flat"><div class="uh"><b>소신권</b><span>합격 가능성 20~49%</span></div><ol class="urank" id="ks-reach"></ol></div></div>
     <p class="unote">국어 원점수 1점은 표준점수 약 1점입니다. 다른 과목은 9월 모의평가 점수 그대로이며, 실제 결과는 수능 난이도와 지원 경향에 따라 달라지고 합격을 보장하지 않습니다.</p></div></details>`;
   const r = document.getElementById("ks-range"); r.addEventListener("input", () => draw(+r.value)); draw(0);
 }
