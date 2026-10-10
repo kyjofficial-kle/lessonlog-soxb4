@@ -66,6 +66,9 @@ table{border-collapse:collapse;width:100%;font-size:13.5px}
 th{font-weight:600;color:var(--muted);text-align:left;font-size:12px;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{padding-left:18px}
+th:last-child,td:last-child{padding-right:18px}
+.card>.tbl{margin:6px 0 10px;border-top:1px solid var(--line)}
+.card>.tbl td{padding:9px 10px;font-size:13px}.card>.tbl th{padding:10px}.card>.tbl td:first-child,.card>.tbl th:first-child{padding-left:20px}.card>.tbl td:last-child,.card>.tbl th:last-child{padding-right:20px}
 tr:last-child td{border-bottom:0}
 .pill{display:inline-flex;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700;background:var(--accent-soft);color:var(--accent-ink)}
 .more{display:block;width:100%;border:0;border-top:1px solid var(--line);background:transparent;padding:12px;font-weight:700;color:var(--ink2);border-radius:0 0 var(--r) var(--r);font-size:14px}
@@ -229,6 +232,7 @@ const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-$
 const md = s => { const d = pd(s); return `${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})`; };
 const mdLong = s => { const d = pd(s); return `${d.getMonth()+1}월 ${d.getDate()}일`; };
 const firstNum = v => { const m = String(v ?? "").match(/\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; };
+const cut1 = v => { const t = String(v ?? ""); const m1 = t.match(/1\s*컷\s*(\d+)/); if(m1) return +m1[1]; if(/[2-9]\s*컷/.test(t)) return null; return firstNum(t); };
 const pctNum = v => { const m = String(v ?? "").match(/(\d+(?:\.\d+)?)\s*[-~]\s*(\d+(?:\.\d+)?)/); return m ? (parseFloat(m[1])+parseFloat(m[2]))/2 : firstNum(v); };
 const sessions = D.sessions.slice().sort((a,b) => a.date.localeCompare(b.date));
 const lessons = sessions.filter(s => s.kind === "lesson");
@@ -318,7 +322,7 @@ const label = e => [e.raw!=null && `${e.raw}점`, e.pct && `백분위 ${e.pct}`,
 const MODES = {
   raw: { name:"원점수", sub:"점선은 그 시험의 1등급 컷", chart: () => lineChart({ label:"원점수 추이", shapes:true, labelLast:true, empty:"시험 기록이 없습니다.",
     series:[{ name:"원점수", c:"var(--ink)", pts: exams.filter(e => e.raw != null).map(e => ({ date:e.date, v:e.raw, official:e.official, name:e.title, label:label(e) })) }],
-    ref:{ name:"1등급 컷", pts: exams.filter(e => firstNum(e.cut) != null && firstNum(e.cut) <= 100).map(e => ({ date:e.date, v:firstNum(e.cut) })) } }) },
+    ref:{ name:"1등급 컷", pts: exams.map(e => ({ e, v: cut1(e.cut) })).filter(x => x.v != null && x.v <= 100 && x.v >= 30).map(({e,v}) => ({ date:e.date, v })) } }) },
   pct: { name:"백분위", sub:"붉은 점선은 1·2·3등급 경계(백분위 96·89·77)", chart: () => lineChart({ label:"백분위 추이", shapes:true, labelLast:true, yMax:100, empty:"백분위가 기록된 시험이 없습니다.",
     hlines:[{v:96,label:"96 · 1등급"},{v:89,label:"89 · 2등급"},{v:77,label:"77 · 3등급"}],
     series:[{ name:"백분위", c:"var(--ink)", pts: exams.filter(e => pctNum(e.pct) != null).map(e => ({ date:e.date, v:pctNum(e.pct), official:e.official, name:e.title, label:label(e) })) }] }) },
