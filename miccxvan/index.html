@@ -191,6 +191,16 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-top:6px;lin
 .kswrap .unote{font-size:11.5px;margin-top:8px}
 .dl{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}.dl.up{color:#17803d}.dl.dn{color:#c0392b}.dl.eq{color:var(--muted)}
 @media (prefers-color-scheme:dark){.dl.up{color:#7fd69c}.dl.dn{color:#f19a8f}}
+
+/* v3: 채점 노트 톤 */
+:root{--bg:#eef0f3;--ink:#161c2b;--ink2:#4a5366;--muted:#7c8496;--line:#e6e8ee;--line2:#d6dae3;--accent:#d63c34;--accent-ink:#b8302a;--accent-soft:#fcebea;--navy:#1f2b4d;--shadow:0 1px 0 rgba(22,28,43,.04)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:#ff6b62;--accent-ink:#ff8c84;--accent-soft:#3a1a19;--navy:#8fa6e6}}
+.card{border:1px solid var(--line);box-shadow:var(--shadow)}
+.card>header h2,.kswrap header h2{font-size:16px;font-weight:800;letter-spacing:-.025em}
+.top h1{letter-spacing:-.045em}
+.seg button[aria-pressed="true"]{box-shadow:0 0 0 1px var(--line2)}
+#ks-range{accent-color:var(--navy)}
+#week .log{margin-top:0!important;padding:0 6px 6px}#week .sess{border-color:transparent;box-shadow:none;background:var(--sunk)}
 </style>
 
 <div class="wrap" id="lock">
