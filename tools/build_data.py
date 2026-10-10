@@ -53,12 +53,12 @@ def main(db, repo):
             old = json.loads(AESGCM(key).decrypt(base64.b64decode(E['iv']), base64.b64decode(E['ct']), None))
             old.pop('generatedAt', None)
             old['sessions'].sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
-            if E.get('sv') == 8 and json.dumps(old, sort_keys=True, ensure_ascii=False) == json.dumps(body, sort_keys=True, ensure_ascii=False): continue
+            if E.get("sv") == 10 and json.dumps(old, sort_keys=True, ensure_ascii=False) == json.dumps(body, sort_keys=True, ensure_ascii=False): continue
         except Exception: pass
         D = {"generatedAt": today, **body}
         iv = os.urandom(12); ct = AESGCM(key).encrypt(iv, json.dumps(D, ensure_ascii=False).encode(), None)
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        json.dump({"v": 1, "sv": 8, "id": pub["path"], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
+        json.dump({"v": 1, "sv": 10, "id": pub["path"], "iv": base64.b64encode(iv).decode(), "ct": base64.b64encode(ct).decode()}, open(out, 'w'))
         changed.append(pub['path'])
     print("updated:", ", ".join(changed) if changed else "none")
 
