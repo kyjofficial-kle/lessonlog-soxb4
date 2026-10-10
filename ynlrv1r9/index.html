@@ -148,6 +148,15 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-top:6px;lin
 .um i{font-style:normal;font-size:11.5px;color:var(--muted)}.um em{font-style:normal;font-size:11.5px;color:#a8620a}
 .zn{font-size:11px;border-radius:5px;padding:0 6px;color:var(--muted);border:1px solid var(--line)}
 .unote{margin:12px 0 0;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.ugrp>summary{list-style:none;cursor:pointer;position:relative;padding-right:28px}
+.ugrp>summary::-webkit-details-marker{display:none}
+.ugrp .uh{margin-bottom:4px}
+.upeek{font-size:13px;color:var(--ink2,var(--muted));line-height:1.5}
+.ugrp[open] .upeek{display:none}
+.ugrp[open]>summary{margin-bottom:8px}
+.utog{position:absolute;right:2px;top:2px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.12)}
+.utog::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s;opacity:.6}
+.ugrp[open] .utog::before{transform:translateY(2px) rotate(-135deg)}
 </style>
 
 <div class="wrap" id="lock">
@@ -386,9 +395,9 @@ function renderUniv(){
   const U = D.univ; if(!U || !((U.fit||[]).length || (U.reach||[]).length)) return;
   const el = document.getElementById("univ"); el.hidden = false;
   const inp = AREAS.filter(([k]) => U.input && U.input[k]).map(([k,l]) => { const c = U.input[k]; return `${l}${c.sub ? "(" + esc(c.sub) + ")" : ""} ${c.std != null ? c.std : (c.g != null ? c.g + "등급" : "")}`; }).join(" · ");
-  const block = (cls, title, desc, list, total) => list && list.length ? `<div class="ugrp ${cls}"><div class="uh"><b>${title}</b><span>${desc}${total && total > list.length ? ` · 상위 ${list.length}개 / 전체 ${total}개` : ""}</span></div>
-    <ol class="urank">${list.map(x => `<li><b>${esc(x.u)}</b> ${esc(x.m.replace(/\[교과\]/, ""))}<span class="um">${x.z ? `<span class="zn">${ZONE[x.z] || ""}</span>` : ""}${x.g ? `<i>${esc(x.g === "이월" ? "수시이월" : x.g + "군")}</i>` : ""}${x.n ? `<em>교과전형·내신 반영</em>` : ""}</span></li>`).join("")}</ol></div>` : "";
-  el.innerHTML = `<header><div><h2>정시 지원 가능권</h2><div class="sub">9월 모의평가 성적 기준 예측 · 합격선이 높은 학과 순</div></div></header>
+  const block = (cls, title, desc, list, total) => list && list.length ? `<details class="ugrp ${cls}"><summary><div class="uh"><b>${title}</b><span>${desc} · ${list.length}개 학과</span></div><div class="upeek">${list.slice(0,3).map(x => esc(x.u + " " + x.m.replace(/\[교과\]/, ""))).join(" · ")}${list.length > 3 ? " …" : ""}</div><span class="utog" aria-hidden="true"></span></summary>
+    <ol class="urank">${list.map(x => `<li><b>${esc(x.u)}</b> ${esc(x.m.replace(/\[교과\]/, ""))}<span class="um">${x.z ? `<span class="zn">${ZONE[x.z] || ""}</span>` : ""}${x.g ? `<i>${esc(x.g === "이월" ? "수시이월" : x.g + "군")}</i>` : ""}${x.n ? `<em>교과전형·내신 반영</em>` : ""}</span></li>`).join("")}</ol></details>` : "";
+  el.innerHTML = `<header><div><h2>정시 지원 가능권</h2><div class="sub">9월 모의평가 성적 기준 예측 · 합격선이 높은 학과 순 · 눌러서 펼쳐 보세요</div></div></header>
   <div class="body"><div class="uin">입력 점수(표준점수·등급) ${inp}</div>
   ${block("fit", "적정권", "합격 가능성 50~79%", U.fit, U.fitTotal)}${block("reach", "소신권", "합격 가능성 20~49%", U.reach, U.reachTotal)}
   <p class="unote">${esc(U.source || "")} 결과를 정리한 참고 자료입니다. ${esc(U.basis || "")}. 실제 합격선은 수능 난이도와 지원 경향에 따라 달라지며, 합격을 보장하지 않습니다.</p></div>`;
