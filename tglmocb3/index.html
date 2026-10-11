@@ -445,13 +445,14 @@ function renderUniv(){
   ${block("fit", "적정권", "합격 가능성 50~79%", U.fit, U.fitTotal)}${block("reach", "소신권", "합격 가능성 20~49%", U.reach, U.reachTotal)}
   <p class="unote">${esc(U.source || "")} 결과를 정리한 참고 자료입니다. ${esc(U.basis || "")}. 실제 합격선은 수능 난이도와 지원 경향에 따라 달라지며, 합격을 보장하지 않습니다.</p></div>`;
 }
+function nbf(v){ return v == null ? "?" : v < 10 ? Number(v).toFixed(2) : Number(v).toFixed(1); }
 function renderSims(){
   const L = (D.sims || []).filter(x => (x.fit || []).length || (x.reach || []).length); if(!L.length) return;
   const el = document.getElementById("sims"); el.hidden = false;
   const lst = (list, cls, title, desc, total, before) => list && list.length ? `<div class="ugrp ${cls} flat"><div class="uh"><b>${title}</b><span>${desc}${total != null ? ` · ${before != null ? before + "개 → " : ""}${total}개 학과` : ""}</span></div>
     <ol class="urank">${list.map(x => `<li><b>${esc(x.u)}</b> ${esc(x.m)}<span class="um">${x.up ? '<span class="newb">NEW</span>' : ""}${x.z ? `<span class="zn">${ZONE[x.z] || ""}</span>` : ""}${x.g ? `<i>${esc(x.g === "이월" ? "수시이월" : x.g + "군")}</i>` : ""}</span></li>`).join("")}</ol></div>` : "";
   el.innerHTML = `<header><div><h2>만약 이만큼 더 맞힌다면</h2><div class="sub">선생님이 저장한 목표 시나리오 · 눌러서 펼쳐 보세요</div></div></header>
-  <div class="body">${L.map(x => `<details class="simcard"><summary><div class="sct">${x.memo ? `<p class="smemo">${esc(x.memo)}</p>` : ""}<b>${esc(x.label)}</b><span>적정권 ${x.fit0 != null ? x.fit0 + " → " : ""}${x.fitTotal}개 · 소신권 ${x.reach0 != null ? x.reach0 + " → " : ""}${x.reachTotal}개 학과</span></div><div class="upeek">${(x.fit || []).slice(0,3).map(y => esc(y.u + " " + y.m)).join(" · ")}${(x.fit || []).length > 3 ? " …" : ""}</div><span class="utog" aria-hidden="true"></span></summary>
+  <div class="body">${L.map(x => `<details class="simcard"><summary><div class="sct">${x.memo ? `<p class="smemo">${esc(x.memo)}</p>` : ""}<b>${esc(x.label)}</b><span>${x.nb != null ? `전국 누백 ${nbf(x.nb0)}% → <b>${nbf(x.nb)}%</b>${x.fitTop != null ? ` · 적정권 최상위 합격선 누백 ${x.fitTop0 != null ? nbf(x.fitTop0) + "% → " : ""}${nbf(x.fitTop)}%` : ""}` : `적정권 ${x.fit0 != null ? x.fit0 + " → " : ""}${x.fitTotal}개 · 소신권 ${x.reach0 != null ? x.reach0 + " → " : ""}${x.reachTotal}개 학과`}</span></div><div class="upeek">${(x.fit || []).slice(0,3).map(y => esc(y.u + " " + y.m)).join(" · ")}${(x.fit || []).length > 3 ? " …" : ""}</div><span class="utog" aria-hidden="true"></span></summary>
     ${lst(x.fit, "fit", "적정권", "합격 가능성 50% 이상", null)}${lst(x.reach, "reach", "소신권", "합격 가능성 20~49%", null)}</details>`).join("")}
   <p class="unote">9월 모의평가 성적에서 과목별 점수가 오른다고 가정한 예측입니다. NEW는 지금 성적보다 한 단계 올라오는 학과입니다. 실제 결과는 수능 난이도와 지원 경향에 따라 달라지며 합격을 보장하지 않습니다.</p></div>`;
 }
