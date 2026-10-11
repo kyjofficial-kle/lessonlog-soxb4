@@ -166,6 +166,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center;padding-top:6px;lin
 .simcard[open] .upeek{display:none}.simcard[open]>summary{margin-bottom:6px}
 .simcard[open] .utog::before{transform:translateY(2px) rotate(-135deg)}
 .sct{display:flex;flex-direction:column;gap:2px}.sct b{font-size:15px}.sct span{font-size:12.5px;color:var(--muted)}
+.smemo{margin:0 0 2px;font-size:14px;font-weight:700;color:var(--accent-ink);line-height:1.45;word-break:keep-all}
 .ugrp.flat{margin-top:8px}
 .newb{font-size:10.5px;font-weight:800;color:#fff;background:#d6453d;border-radius:5px;padding:0 5px}
 [hidden]{display:none!important}
@@ -450,7 +451,7 @@ function renderSims(){
   const lst = (list, cls, title, desc, total, before) => list && list.length ? `<div class="ugrp ${cls} flat"><div class="uh"><b>${title}</b><span>${desc}${total != null ? ` · ${before != null ? before + "개 → " : ""}${total}개 학과` : ""}</span></div>
     <ol class="urank">${list.map(x => `<li><b>${esc(x.u)}</b> ${esc(x.m)}<span class="um">${x.up ? '<span class="newb">NEW</span>' : ""}${x.z ? `<span class="zn">${ZONE[x.z] || ""}</span>` : ""}${x.g ? `<i>${esc(x.g === "이월" ? "수시이월" : x.g + "군")}</i>` : ""}</span></li>`).join("")}</ol></div>` : "";
   el.innerHTML = `<header><div><h2>만약 이만큼 더 맞힌다면</h2><div class="sub">선생님이 저장한 목표 시나리오 · 눌러서 펼쳐 보세요</div></div></header>
-  <div class="body">${L.map(x => `<details class="simcard"><summary><div class="sct"><b>${esc(x.label)}</b><span>적정권 ${x.fit0 != null ? x.fit0 + " → " : ""}${x.fitTotal}개 · 소신권 ${x.reach0 != null ? x.reach0 + " → " : ""}${x.reachTotal}개 학과</span></div><div class="upeek">${(x.fit || []).slice(0,3).map(y => esc(y.u + " " + y.m)).join(" · ")}${(x.fit || []).length > 3 ? " …" : ""}</div><span class="utog" aria-hidden="true"></span></summary>
+  <div class="body">${L.map(x => `<details class="simcard"><summary><div class="sct">${x.memo ? `<p class="smemo">${esc(x.memo)}</p>` : ""}<b>${esc(x.label)}</b><span>적정권 ${x.fit0 != null ? x.fit0 + " → " : ""}${x.fitTotal}개 · 소신권 ${x.reach0 != null ? x.reach0 + " → " : ""}${x.reachTotal}개 학과</span></div><div class="upeek">${(x.fit || []).slice(0,3).map(y => esc(y.u + " " + y.m)).join(" · ")}${(x.fit || []).length > 3 ? " …" : ""}</div><span class="utog" aria-hidden="true"></span></summary>
     ${lst(x.fit, "fit", "적정권", "합격 가능성 50% 이상", null)}${lst(x.reach, "reach", "소신권", "합격 가능성 20~49%", null)}</details>`).join("")}
   <p class="unote">9월 모의평가 성적에서 과목별 점수가 오른다고 가정한 예측입니다. NEW는 지금 성적보다 한 단계 올라오는 학과입니다. 실제 결과는 수능 난이도와 지원 경향에 따라 달라지며 합격을 보장하지 않습니다.</p></div>`;
 }
