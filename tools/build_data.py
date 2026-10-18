@@ -40,7 +40,7 @@ def main(db, repo):
         for x in sessions:
             if x.get('sid') != sid or x.get('kind') in ('absent', 'event'): continue
             r = {k: x.get(k) for k in KEEP}; r['note'] = clean(r['note'])
-            e = x.get('exam'); r['exam'] = {k: e.get(k) for k in EXAM} if e else None
+            e = x.get('exam'); au = (e or {}).get('auto') or {}; r['exam'] = {k: (None if au.get(k) else e.get(k)) for k in EXAM} if e else None  # 자동 추정값(auto)은 학부모 페이지에 싣지 않음
             if r.get('kind', 'lesson') == 'lesson' and empty(r): continue
             S.append(r)
         S.sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
