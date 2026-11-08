@@ -84,6 +84,9 @@ input[type=search]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 .log{display:flex;flex-direction:column;padding:0 14px 4px}
 .sess{background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;margin:0 0 12px}
 .sess.empty{border:0;padding:6px 4px}
+.sess.fw{background:var(--warn-soft);border:1.5px solid var(--warn)}
+.sess.fw .h b{color:var(--warn)}
+.sess.fw .fwb p{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--ink)}
 .sess .h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .sess .h b{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .sess .h span{font-size:13.5px;color:var(--muted)}
@@ -386,6 +389,7 @@ function sessHTML(s){ const unit = D.student.unit || "차시";
     hw.length ? `<div class="blk${two ? "" : " wide"}"><div class="bt"><i style="background:var(--good)"></i>과제</div><ol class="hwl">${hw.map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>` : "",
     note ? `<div class="blk wide note"><div class="bt"><i style="background:var(--accent)"></i>선생님 코멘트</div><p>${nl2br(note)}</p></div>` : ""
   ].join("");
+  if (s.kind === "consult" && s.progress === "종강") return `<article class="sess fw"><div class="h"><b>종강 인사</b><span>${md(s.date)}</span></div><div class="fwb"><p>${nl2br(note)}</p></div></article>`;
   const label = s.no!=null ? s.no+unit : s.kind === "consult" ? "상담" : "수업";
   return `<article class="sess"><div class="h"><b>${label}</b><span>${md(s.date)}</span></div>${bar}${blocks ? `<div class="blks">${blocks}</div>` : ""}</article>`; }
 function renderLog(){
