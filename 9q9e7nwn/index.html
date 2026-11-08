@@ -84,9 +84,15 @@ input[type=search]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 .log{display:flex;flex-direction:column;padding:0 14px 4px}
 .sess{background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;margin:0 0 12px}
 .sess.empty{border:0;padding:6px 4px}
-.sess.fw{background:var(--warn-soft);border:1.5px solid var(--warn)}
-.sess.fw .h b{color:var(--warn)}
-.sess.fw .fwb p{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--ink)}
+.fwc{margin:0 0 18px;border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line2);box-shadow:0 14px 40px rgba(60,40,20,.14)}
+.fwc .art{display:block;width:100%;height:auto}
+.fwc .fwt{padding:22px 24px 6px}
+.fwc .fwt small{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.02em;margin-bottom:6px}
+.fwc .fwt h2{margin:0;font-size:21px;line-height:1.35;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.fwc .fwt h2 em{display:block;font-style:normal;font-size:15px;font-weight:600;color:var(--accent-ink);margin-top:4px}
+.fwc .fwb{padding:12px 24px 26px}
+.fwc .fwb p{margin:0 0 12px;font-size:15.5px;line-height:1.95;color:var(--ink2);word-break:keep-all}
+.fwc .fwb p:last-child{margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line);color:var(--ink);font-weight:700}
 .sess .h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .sess .h b{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .sess .h span{font-size:13.5px;color:var(--muted)}
@@ -400,7 +406,7 @@ function renderLog(){
   document.getElementById("log").innerHTML = `<header><div><h2>수업 기록</h2><div class="sub">매주 발송해 드린 과제 리포트를 모아 보실 수 있습니다</div></div>
     <div class="tools"><input type="search" id="q" placeholder="기록 검색 (예: 9모, 과제)" value="${esc(q)}" aria-label="수업 기록 검색"></div></header>
     <div class="log" style="margin-top:8px">
-      ${D.farewell && D.farewell.text && !q ? `<article class="sess fw"><div class="h"><b>${esc(D.farewell.title || "종강")}</b></div><div class="fwb"><p>${nl2br(D.farewell.text)}</p></div></article>` : ""}
+      ${D.farewell && D.farewell.text && !q ? `<article class="fwc"><svg class="art" viewBox="0 0 600 240" role="img" aria-label="산길 위로 해가 떠오르는 풍경"><defs><linearGradient id="fwsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3a67"/><stop offset=".55" stop-color="#e0708a"/><stop offset="1" stop-color="#ffc277"/></linearGradient><radialGradient id="fwsun"><stop offset="0" stop-color="#fff6d6"/><stop offset="1" stop-color="#ffd37a"/></radialGradient></defs><rect width="600" height="240" fill="url(#fwsky)"/><g fill="#fff" opacity=".8"><circle cx="70" cy="40" r="1.6"/><circle cx="150" cy="70" r="1.2"/><circle cx="260" cy="30" r="1.5"/><circle cx="470" cy="46" r="1.4"/><circle cx="540" cy="86" r="1.2"/><circle cx="360" cy="62" r="1"/></g><circle cx="300" cy="150" r="52" fill="url(#fwsun)"/><circle cx="300" cy="150" r="78" fill="#ffd37a" opacity=".18"/><path d="M0 190 L90 128 L170 176 L260 120 L330 168 L430 108 L520 160 L600 130 V240 H0Z" fill="#6b4a7a" opacity=".75"/><path d="M0 214 L110 160 L210 204 L320 150 L420 200 L520 156 L600 188 V240 H0Z" fill="#3d2d5c"/><path d="M300 240 C 250 222 360 214 318 196 C 285 184 335 178 306 164" fill="none" stroke="#ffe3a8" stroke-width="5" stroke-linecap="round" opacity=".9"/><path d="M306 164 V146 L324 152 L306 158" fill="#fff6d6" stroke="#fff6d6" stroke-width="2" stroke-linejoin="round"/></svg><div class="fwt"><small>${md(D.farewell.date || "")}</small><h2>${esc(D.farewell.title || "종강")}</h2></div><div class="fwb">${String(D.farewell.text).split("\n").map(t => `<p>${esc(t)}</p>`).join("")}</div></article>` : ""}
       ${recent.length ? `<div class="sect-lbl">최근 8주</div>${recent.map(sessHTML).join("")}` : ""}
       ${months.length ? `<div class="sect-lbl" style="border-top:1px solid var(--line);margin-top:4px">이전 기록 보관함</div>${months.map(g => { const d = pd(g.k+"-01"); return `<details class="month"${q ? " open" : ""}><summary><span>${d.getFullYear()}년 ${d.getMonth()+1}월<small>${g.items.length}건</small></span></summary>${g.items.map(sessHTML).join("")}</details>`; }).join("")}` : ""}
       ${!list.length ? `<div class="sess empty">‘${esc(q)}’가 들어간 기록이 없습니다.</div>` : ""}
