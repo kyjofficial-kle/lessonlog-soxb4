@@ -389,13 +389,13 @@ function sessHTML(s){ const unit = D.student.unit || "차시";
     hw.length ? `<div class="blk${two ? "" : " wide"}"><div class="bt"><i style="background:var(--good)"></i>과제</div><ol class="hwl">${hw.map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>` : "",
     note ? `<div class="blk wide note"><div class="bt"><i style="background:var(--accent)"></i>선생님 코멘트</div><p>${nl2br(note)}</p></div>` : ""
   ].join("");
-  if (s.kind === "consult" && s.progress === "종강") return `<article class="sess fw"><div class="h"><b>종강 인사</b><span>${md(s.date)}</span></div><div class="fwb"><p>${nl2br(note)}</p></div></article>`;
+  if (s.kind === "event" && s.title === "종강") return `<article class="sess fw"><div class="h"><b>종강</b><span>${md(s.date)}</span></div><div class="fwb"><p>${nl2br(note)}</p></div></article>`;
   const label = s.no!=null ? s.no+unit : s.kind === "consult" ? "상담" : "수업";
   return `<article class="sess"><div class="h"><b>${label}</b><span>${md(s.date)}</span></div>${bar}${blocks ? `<div class="blks">${blocks}</div>` : ""}</article>`; }
 function renderLog(){
   const cut = pd(gen); cut.setDate(cut.getDate() - 56); const cutS = ymd(cut);
   const match = s => !q || message(s).toLowerCase().includes(q);
-  const list = [...sessions].reverse().filter(s => s.kind === "lesson" || s.kind === "consult").filter(match);
+  const list = [...sessions].reverse().filter(s => s.kind === "lesson" || s.kind === "consult" || (s.kind === "event" && s.title === "종강")).filter(match);
   const recent = list.filter(s => s.date >= cutS), old = list.filter(s => s.date < cutS);
   const months = []; for(const s of old){ const k = s.date.slice(0,7); let g = months.find(x => x.k === k); if(!g) months.push(g = {k, items:[]}); g.items.push(s); }
   document.getElementById("log").innerHTML = `<header><div><h2>수업 기록</h2><div class="sub">매주 발송해 드린 과제 리포트를 모아 보실 수 있습니다</div></div>

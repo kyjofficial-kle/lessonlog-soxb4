@@ -6,7 +6,7 @@ A page is rewritten only when its decrypted content (ignoring generatedAt) chang
 import json, glob, os, re, sys, base64, datetime
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-KEEP = ['date','no','kind','hwRate','hwMemo','pretest','tests','progress','hw','note']
+KEEP = ['date','no','kind','title','hwRate','hwMemo','pretest','tests','progress','hw','note']
 EXAM = ['title','official','raw','std','pct','cut','grade','read','lit','sel','wrong']
 
 FEE = re.compile(r'수업료|원\s*[x×*]|입금|계좌|송금|\d{2,3},\d{3}원')
@@ -38,8 +38,9 @@ def main(db, repo):
         if not (pub.get('path') and pub.get('key')): continue
         S = []
         for x in sessions:
-            if x.get('sid') != sid or x.get('kind') in ('absent', 'event'): continue
+            if x.get('sid') != sid or x.get('kind') == 'absent' or (x.get('kind') == 'event' and x.get('title') != '종강'): continue
             r = {k: x.get(k) for k in KEEP}; r['note'] = clean(r['note'])
+            if not r.get('title'): r.pop('title', None)
             e = x.get('exam'); r['exam'] = {k: e.get(k) for k in EXAM} if e else None  # 자동 추정값(auto)도 그대로 학부모 페이지에 싣는다 (사용자 지시)
             if r.get('kind', 'lesson') == 'lesson' and empty(r): continue
             S.append(r)
