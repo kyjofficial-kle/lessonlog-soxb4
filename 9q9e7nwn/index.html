@@ -389,18 +389,18 @@ function sessHTML(s){ const unit = D.student.unit || "차시";
     hw.length ? `<div class="blk${two ? "" : " wide"}"><div class="bt"><i style="background:var(--good)"></i>과제</div><ol class="hwl">${hw.map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>` : "",
     note ? `<div class="blk wide note"><div class="bt"><i style="background:var(--accent)"></i>선생님 코멘트</div><p>${nl2br(note)}</p></div>` : ""
   ].join("");
-  if (s.kind === "event" && s.title === "종강") return `<article class="sess fw"><div class="h"><b>종강</b><span>${md(s.date)}</span></div><div class="fwb"><p>${nl2br(note)}</p></div></article>`;
   const label = s.no!=null ? s.no+unit : s.kind === "consult" ? "상담" : "수업";
   return `<article class="sess"><div class="h"><b>${label}</b><span>${md(s.date)}</span></div>${bar}${blocks ? `<div class="blks">${blocks}</div>` : ""}</article>`; }
 function renderLog(){
   const cut = pd(gen); cut.setDate(cut.getDate() - 56); const cutS = ymd(cut);
   const match = s => !q || message(s).toLowerCase().includes(q);
-  const list = [...sessions].reverse().filter(s => s.kind === "lesson" || s.kind === "consult" || (s.kind === "event" && s.title === "종강")).filter(match);
+  const list = [...sessions].reverse().filter(s => s.kind === "lesson" || s.kind === "consult").filter(match);
   const recent = list.filter(s => s.date >= cutS), old = list.filter(s => s.date < cutS);
   const months = []; for(const s of old){ const k = s.date.slice(0,7); let g = months.find(x => x.k === k); if(!g) months.push(g = {k, items:[]}); g.items.push(s); }
   document.getElementById("log").innerHTML = `<header><div><h2>수업 기록</h2><div class="sub">매주 발송해 드린 과제 리포트를 모아 보실 수 있습니다</div></div>
     <div class="tools"><input type="search" id="q" placeholder="기록 검색 (예: 9모, 과제)" value="${esc(q)}" aria-label="수업 기록 검색"></div></header>
     <div class="log" style="margin-top:8px">
+      ${D.farewell && D.farewell.text && !q ? `<article class="sess fw"><div class="h"><b>${esc(D.farewell.title || "종강")}</b></div><div class="fwb"><p>${nl2br(D.farewell.text)}</p></div></article>` : ""}
       ${recent.length ? `<div class="sect-lbl">최근 8주</div>${recent.map(sessHTML).join("")}` : ""}
       ${months.length ? `<div class="sect-lbl" style="border-top:1px solid var(--line);margin-top:4px">이전 기록 보관함</div>${months.map(g => { const d = pd(g.k+"-01"); return `<details class="month"${q ? " open" : ""}><summary><span>${d.getFullYear()}년 ${d.getMonth()+1}월<small>${g.items.length}건</small></span></summary>${g.items.map(sessHTML).join("")}</details>`; }).join("")}` : ""}
       ${!list.length ? `<div class="sess empty">‘${esc(q)}’가 들어간 기록이 없습니다.</div>` : ""}

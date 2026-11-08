@@ -6,7 +6,7 @@ A page is rewritten only when its decrypted content (ignoring generatedAt) chang
 import json, glob, os, re, sys, base64, datetime
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-KEEP = ['date','no','kind','title','hwRate','hwMemo','pretest','tests','progress','hw','note']
+KEEP = ['date','no','kind','hwRate','hwMemo','pretest','tests','progress','hw','note']
 EXAM = ['title','official','raw','std','pct','cut','grade','read','lit','sel','wrong']
 
 FEE = re.compile(r'수업료|원\s*[x×*]|입금|계좌|송금|\d{2,3},\d{3}원')
@@ -38,16 +38,15 @@ def main(db, repo):
         if not (pub.get('path') and pub.get('key')): continue
         S = []
         for x in sessions:
-            if x.get('sid') != sid or x.get('kind') == 'absent' or (x.get('kind') == 'event' and x.get('title') != '종강'): continue
+            if x.get('sid') != sid or x.get('kind') in ('absent', 'event'): continue
             r = {k: x.get(k) for k in KEEP}; r['note'] = clean(r['note'])
-            if not r.get('title'): r.pop('title', None)
             e = x.get('exam'); r['exam'] = {k: e.get(k) for k in EXAM} if e else None  # 자동 추정값(auto)도 그대로 학부모 페이지에 싣는다 (사용자 지시)
             if r.get('kind', 'lesson') == 'lesson' and empty(r): continue
             S.append(r)
         S.sort(key=lambda r: (r.get('date') or '', r.get('no') if isinstance(r.get('no'), (int, float)) else -1))
         cur = [x.get('no') for x in sessions if x.get('sid') == sid and isinstance(x.get('no'), (int, float)) and (x.get('date') or '9') <= today
                and x.get('kind') != 'event' and not (x.get('kind', 'lesson') == 'lesson' and empty(x))]
-        body = {"curNo": max(cur) if cur else None, "teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S, "ksim": (st.get("ksim") if isinstance(st.get("ksim"), dict) and st["ksim"].get("show") is not False else None), "sims": [{"label": x.get("label"), "date": x.get("date"), "fit": x.get("fit"), "reach": x.get("reach"), "fitTotal": x.get("fitTotal"), "reachTotal": x.get("reachTotal"), "fit0": x.get("fit0"), "reach0": x.get("reach0"), "memo": x.get("memo"), "nb": x.get("nb"), "nb0": x.get("nb0"), "fitTop": x.get("fitTop"), "fitTop0": x.get("fitTop0")} for x in (st.get("sims") or []) if x.get("show") is not False], "univ": ({k: st["univ"].get(k) for k in ("source","date","basis","input","fit","reach","fitTotal","reachTotal","nubaek")} if isinstance(st.get("univ"), dict) else None), "mocks": [{"label": m.get("label"), "date": m.get("date"), "note": m.get("note"), "items": m.get("items") or {}} for m in (st.get("mocks") or [])], "advice": ({"text": st["advice"]["text"], "date": st["advice"].get("date")} if isinstance(st.get("advice"), dict) and st["advice"].get("text") and st["advice"].get("show") is not False else None)}
+        body = {"curNo": max(cur) if cur else None, "teacher": "김용준", "student": {"display": pub.get('display') or st.get('name'), "elective": st.get('elective'), "unit": st.get('unit') or '차시'}, "sessions": S, "ksim": (st.get("ksim") if isinstance(st.get("ksim"), dict) and st["ksim"].get("show") is not False else None), "sims": [{"label": x.get("label"), "date": x.get("date"), "fit": x.get("fit"), "reach": x.get("reach"), "fitTotal": x.get("fitTotal"), "reachTotal": x.get("reachTotal"), "fit0": x.get("fit0"), "reach0": x.get("reach0"), "memo": x.get("memo"), "nb": x.get("nb"), "nb0": x.get("nb0"), "fitTop": x.get("fitTop"), "fitTop0": x.get("fitTop0")} for x in (st.get("sims") or []) if x.get("show") is not False], "univ": ({k: st["univ"].get(k) for k in ("source","date","basis","input","fit","reach","fitTotal","reachTotal","nubaek")} if isinstance(st.get("univ"), dict) else None), "mocks": [{"label": m.get("label"), "date": m.get("date"), "note": m.get("note"), "items": m.get("items") or {}} for m in (st.get("mocks") or [])], "farewell": ({"title": st["farewell"].get("title"), "text": st["farewell"]["text"]} if isinstance(st.get("farewell"), dict) and st["farewell"].get("text") and st["farewell"].get("show") is not False else None), "advice": ({"text": st["advice"]["text"], "date": st["advice"].get("date")} if isinstance(st.get("advice"), dict) and st["advice"].get("text") and st["advice"].get("show") is not False else None)}
         key = key_of(pub['key']); out = os.path.join(repo, pub['path'], 'data.json')
         try:
             E = json.load(open(out))
